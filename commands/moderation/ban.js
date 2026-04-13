@@ -11,7 +11,7 @@ const resolveTarget = async (input, guild) => {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('ban')
+        .setName('밴')
         .setDescription('사용자를 서버에서 밴합니다 (관리자 전용)')
         .addStringOption(option =>
             option.setName('대상').setDescription('밴할 사용자 (멘션 또는 사용자 ID)').setRequired(true)

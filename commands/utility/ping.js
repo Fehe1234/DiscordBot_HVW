@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('ping')
+        .setName('핑')
         .setDescription('봇의 현재 통신 상태를 확인합니다'),
 
     async execute(interaction) {

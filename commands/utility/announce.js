@@ -8,7 +8,7 @@ const loadSettings = () => JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('announce')
+        .setName('공지')
         .setDescription('공지 채널에 공지를 전송합니다 (관리자 전용)')
         .addStringOption(option =>
             option.setName('제목').setDescription('공지 제목').setRequired(true)
@@ -24,7 +24,7 @@ module.exports = {
 
         if (!channelId) {
             return interaction.reply({
-                content: '공지 채널이 설정되지 않았습니다. `/announce-setup` 으로 먼저 채널을 설정해주세요.',
+                content: '공지 채널이 설정되지 않았습니다. `/공지설정` 으로 먼저 채널을 설정해주세요.',
                 flags: MessageFlags.Ephemeral,
             });
         }
@@ -32,7 +32,7 @@ module.exports = {
         const channel = interaction.guild.channels.cache.get(channelId);
         if (!channel) {
             return interaction.reply({
-                content: '설정된 공지 채널을 찾을 수 없습니다. `/announce-setup` 으로 다시 설정해주세요.',
+                content: '설정된 공지 채널을 찾을 수 없습니다. `/공지설정` 으로 다시 설정해주세요.',
                 flags: MessageFlags.Ephemeral,
             });
         }

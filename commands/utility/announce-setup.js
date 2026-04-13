@@ -9,7 +9,7 @@ const saveSettings = (data) => fs.writeFileSync(settingsPath, JSON.stringify(dat
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('announce-setup')
+        .setName('공지설정')
         .setDescription('공지를 보낼 채널을 설정합니다 (관리자 전용)')
         .addChannelOption(option =>
             option.setName('채널').setDescription('공지 채널').setRequired(true)
