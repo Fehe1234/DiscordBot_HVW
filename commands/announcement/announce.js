@@ -19,26 +19,22 @@ module.exports = {
         ),
 
     async execute(interaction) {
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
         if (!hasPermission(interaction.member)) {
-            return interaction.reply({ content: '이 명령어를 사용할 권한이 없습니다.', flags: MessageFlags.Ephemeral });
+            return interaction.editReply('이 명령어를 사용할 권한이 없습니다.');
         }
 
         const settings = loadSettings();
         const channelId = settings[interaction.guildId]?.announceChannel;
 
         if (!channelId) {
-            return interaction.reply({
-                content: '공지 채널이 설정되지 않았습니다. `/공지설정` 으로 먼저 채널을 설정해주세요.',
-                flags: MessageFlags.Ephemeral,
-            });
+            return interaction.editReply('공지 채널이 설정되지 않았습니다. `/공지설정` 으로 먼저 채널을 설정해주세요.');
         }
 
         const channel = interaction.guild.channels.cache.get(channelId);
         if (!channel) {
-            return interaction.reply({
-                content: '설정된 공지 채널을 찾을 수 없습니다. `/공지설정` 으로 다시 설정해주세요.',
-                flags: MessageFlags.Ephemeral,
-            });
+            return interaction.editReply('설정된 공지 채널을 찾을 수 없습니다. `/공지설정` 으로 다시 설정해주세요.');
         }
 
         const title = interaction.options.getString('제목');
@@ -52,6 +48,6 @@ module.exports = {
             .setTimestamp();
 
         await channel.send({ embeds: [embed] });
-        await interaction.reply({ content: `${channel} 에 공지를 전송했습니다.`, flags: MessageFlags.Ephemeral });
+        await interaction.editReply(`${channel} 에 공지를 전송했습니다.`);
     },
 };

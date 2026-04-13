@@ -17,8 +17,10 @@ module.exports = {
         ),
 
     async execute(interaction) {
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
         if (!hasPermission(interaction.member)) {
-            return interaction.reply({ content: '이 명령어를 사용할 권한이 없습니다.', flags: MessageFlags.Ephemeral });
+            return interaction.editReply('이 명령어를 사용할 권한이 없습니다.');
         }
 
         const channel = interaction.options.getChannel('채널');
@@ -28,9 +30,6 @@ module.exports = {
         settings[interaction.guildId].announceChannel = channel.id;
         saveSettings(settings);
 
-        await interaction.reply({
-            content: `공지 채널이 ${channel} 으로 설정됐습니다.`,
-            flags: MessageFlags.Ephemeral,
-        });
+        await interaction.editReply(`공지 채널이 ${channel} 으로 설정됐습니다.`);
     },
 };
