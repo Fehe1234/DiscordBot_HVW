@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, MessageFlags } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -25,7 +25,7 @@ module.exports = {
         if (!channelId) {
             return interaction.reply({
                 content: '공지 채널이 설정되지 않았습니다. `/announce-setup` 으로 먼저 채널을 설정해주세요.',
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
         }
 
@@ -33,7 +33,7 @@ module.exports = {
         if (!channel) {
             return interaction.reply({
                 content: '설정된 공지 채널을 찾을 수 없습니다. `/announce-setup` 으로 다시 설정해주세요.',
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
         }
 
@@ -48,6 +48,6 @@ module.exports = {
             .setTimestamp();
 
         await channel.send({ embeds: [embed] });
-        await interaction.reply({ content: `${channel} 에 공지를 전송했습니다.`, ephemeral: true });
+        await interaction.reply({ content: `${channel} 에 공지를 전송했습니다.`, flags: MessageFlags.Ephemeral });
     },
 };

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 
 const resolveTarget = async (input, guild) => {
     const id = input.replace(/[<@!>]/g, '').trim();
@@ -27,11 +27,11 @@ module.exports = {
         const target = await resolveTarget(input, interaction.guild);
 
         if (!target) {
-            return interaction.reply({ content: '대상 사용자를 찾을 수 없습니다. 올바른 멘션 또는 사용자 ID를 입력해주세요.', ephemeral: true });
+            return interaction.reply({ content: '대상 사용자를 찾을 수 없습니다. 올바른 멘션 또는 사용자 ID를 입력해주세요.', flags: MessageFlags.Ephemeral });
         }
 
         if (!target.bannable) {
-            return interaction.reply({ content: '해당 사용자를 밴할 수 없습니다. (권한 부족)', ephemeral: true });
+            return interaction.reply({ content: '해당 사용자를 밴할 수 없습니다. (권한 부족)', flags: MessageFlags.Ephemeral });
         }
 
         try {
@@ -39,7 +39,7 @@ module.exports = {
             await interaction.reply(`**${target.user.tag}** 님을 밴했습니다.\n사유: ${reason}`);
         } catch (err) {
             console.error(err);
-            await interaction.reply({ content: '밴 처리 중 오류가 발생했습니다.', ephemeral: true });
+            await interaction.reply({ content: '밴 처리 중 오류가 발생했습니다.', flags: MessageFlags.Ephemeral });
         }
     },
 };

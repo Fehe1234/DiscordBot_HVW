@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, Events, Collection } = require('discord.js');
+const { Client, GatewayIntentBits, Events, Collection, MessageFlags } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -51,7 +51,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         await command.execute(interaction);
     } catch (err) {
         console.error(err);
-        const msg = { content: '커맨드 실행 중 오류가 발생했습니다.', ephemeral: true };
+        const msg = { content: '커맨드 실행 중 오류가 발생했습니다.', flags: MessageFlags.Ephemeral };
         interaction.replied || interaction.deferred
             ? await interaction.followUp(msg)
             : await interaction.reply(msg);
