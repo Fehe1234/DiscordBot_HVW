@@ -8,7 +8,7 @@ module.exports = {
     async execute(interaction) {
         const embed = new EmbedBuilder()
             .setTitle('페헤님은 누구?')
-            .setDescription('Hello! VRChat World! 서버를 운영하고 계시는 멋있고 저를 만들어 주신 분 입니다!')
+            .setDescription('Hello! VRChat World! 서버를 운영하시는 멋진 서버장이자, 저를 만들어 주신 분입니다!')
             .setColor(0x5865F2)
             .setTimestamp();
 
