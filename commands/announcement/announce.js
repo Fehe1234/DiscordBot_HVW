@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
+const { hasPermission } = require('../../utils/permissions');
 const fs = require('fs');
 const path = require('path');
 
@@ -15,10 +16,13 @@ module.exports = {
         )
         .addStringOption(option =>
             option.setName('내용').setDescription('공지 내용').setRequired(true)
-        )
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        ),
 
     async execute(interaction) {
+        if (!hasPermission(interaction.member)) {
+            return interaction.reply({ content: '이 명령어를 사용할 권한이 없습니다.', flags: MessageFlags.Ephemeral });
+        }
+
         const settings = loadSettings();
         const channelId = settings[interaction.guildId]?.announceChannel;
 

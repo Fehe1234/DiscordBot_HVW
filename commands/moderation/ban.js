@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
+const { hasPermission } = require('../../utils/permissions');
 
 const resolveTarget = async (input, guild) => {
     const id = input.replace(/[<@!>]/g, '').trim();
@@ -18,10 +19,13 @@ module.exports = {
         )
         .addStringOption(option =>
             option.setName('사유').setDescription('밴 사유').setRequired(false)
-        )
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        ),
 
     async execute(interaction) {
+        if (!hasPermission(interaction.member)) {
+            return interaction.reply({ content: '이 명령어를 사용할 권한이 없습니다.', flags: MessageFlags.Ephemeral });
+        }
+
         const input = interaction.options.getString('대상');
         const reason = interaction.options.getString('사유') ?? '사유 없음';
         const target = await resolveTarget(input, interaction.guild);
