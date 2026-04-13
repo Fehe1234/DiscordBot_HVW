@@ -16,6 +16,14 @@ module.exports = {
         )
         .addStringOption(option =>
             option.setName('내용').setDescription('공지 내용').setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName('멘션').setDescription('멘션 여부를 선택합니다').setRequired(false)
+                .addChoices(
+                    { name: '없음', value: 'none' },
+                    { name: '@everyone', value: '@everyone' },
+                    { name: '@here', value: '@here' },
+                )
         ),
 
     async execute(interaction) {
@@ -39,6 +47,7 @@ module.exports = {
 
         const title = interaction.options.getString('제목');
         const content = interaction.options.getString('내용');
+        const mention = interaction.options.getString('멘션') ?? 'none';
 
         const embed = new EmbedBuilder()
             .setTitle(title)
@@ -47,7 +56,10 @@ module.exports = {
             .setFooter({ text: `공지 | ${interaction.user.tag}` })
             .setTimestamp();
 
-        await channel.send({ embeds: [embed] });
+        const messagePayload = { embeds: [embed] };
+        if (mention !== 'none') messagePayload.content = mention;
+
+        await channel.send(messagePayload);
         await interaction.editReply(`${channel} 에 공지를 전송했습니다.`);
     },
 };
