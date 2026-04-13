@@ -1,4 +1,16 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const fs = require('fs');
+const path = require('path');
+
+const warningsPath = path.join(__dirname, '../../data/warnings.json');
+
+const loadWarnings = () => {
+    try {
+        return JSON.parse(fs.readFileSync(warningsPath, 'utf-8'));
+    } catch {
+        return {};
+    }
+};
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,6 +21,7 @@ module.exports = {
         ),
 
     async execute(interaction) {
+        await interaction.deferReply();
         const target = interaction.options.getMember('대상') ?? interaction.member;
         const user = target.user;
 
@@ -24,6 +37,9 @@ module.exports = {
             .map(r => `${r}`)
             .join(' ') || '없음';
 
+        const warnings = loadWarnings();
+        const warnCount = warnings[user.id]?.length ?? 0;
+
         const embed = new EmbedBuilder()
             .setTitle(`${user.username} 의 정보`)
             .setThumbnail(user.displayAvatarURL({ size: 256 }))
@@ -35,10 +51,11 @@ module.exports = {
                 { name: '계정 생성일', value: createdAt, inline: false },
                 { name: '서버 참가일', value: joinedAt, inline: false },
                 { name: `역할 (${target.roles.cache.size - 1}개)`, value: roles, inline: false },
+                { name: '⚠️ 경고', value: `${warnCount}회`, inline: false },
             )
             .setFooter({ text: `요청: ${interaction.user.tag}` })
             .setTimestamp();
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     },
 };
