@@ -6,9 +6,13 @@ const path = require('path');
 const STATUS_CHANNEL_ID = '1383773094837223436';
 const ONLINE_CHANNEL_ID = '1493282040815288443';
 
+const WELCOME_CHANNEL_ID = '1240378733618135204';
+const RULES_CHANNEL_ID   = '1240377977686986856';
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
+        // GatewayIntentBits.GuildMembers, // Discord Developer Portal에서 SERVER MEMBERS INTENT 활성화 후 주석 해제
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
     ],
@@ -44,6 +48,27 @@ client.once(Events.ClientReady, async (c) => {
             .setTimestamp();
         await channel.send({ embeds: [embed] }).catch(() => {});
     }
+});
+
+client.on(Events.GuildMemberAdd, async (member) => {
+    if (member.user.bot) return;
+
+    const channel = member.guild.channels.cache.get(WELCOME_CHANNEL_ID);
+    if (!channel) return;
+
+    const embed = new EmbedBuilder()
+        .setTitle('🌍 새로운 멤버가 들어왔어요!')
+        .setDescription(
+            `${member} 님, **VRChat World!** 에 오신 걸 환영합니다! 🎉\n\n` +
+            `먼저 <#${RULES_CHANNEL_ID}> 채널을 꼭 확인해주세요.\n` +
+            `앞으로 즐거운 커뮤니티 활동 되시길 바랍니다 😊`
+        )
+        .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+        .setColor(0x5865F2)
+        .setFooter({ text: `${member.guild.name}` })
+        .setTimestamp();
+
+    await channel.send({ content: `${member}`, embeds: [embed] }).catch(console.error);
 });
 
 client.on(Events.MessageCreate, (message) => {
