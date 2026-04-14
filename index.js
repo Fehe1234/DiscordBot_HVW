@@ -59,7 +59,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
     const embed = new EmbedBuilder()
         .setTitle('🌍 새로운 멤버가 들어왔어요!')
         .setDescription(
-            `${member} 님, **VRChat World!** 에 오신 걸 환영합니다! 🎉\n\n` +
+            `${member} 님, **Hello! VRChat World!** 에 오신 걸 환영합니다! 🎉\n\n` +
             `먼저 <#${RULES_CHANNEL_ID}> 채널을 꼭 확인해주세요.\n` +
             `앞으로 즐거운 커뮤니티 활동 되시길 바랍니다 😊`
         )
