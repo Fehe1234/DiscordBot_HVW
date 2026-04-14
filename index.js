@@ -12,7 +12,7 @@ const RULES_CHANNEL_ID   = '1240377977686986856';
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-        // GatewayIntentBits.GuildMembers, // Discord Developer Portal에서 SERVER MEMBERS INTENT 활성화 후 주석 해제
+        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
     ],
