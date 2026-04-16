@@ -3,6 +3,14 @@ const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js'
 const cooldowns = new Map();
 const COOLDOWN_MS = 5 * 60 * 60 * 1000; // 5시간
 
+const ALLOWED_EXTENSIONS = new Set([
+    'png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp',       // 이미지
+    'mp4', 'mov', 'avi', 'webm',                        // 영상
+    'mp3', 'wav', 'ogg',                                // 오디오
+    'pdf', 'txt', 'md',                                 // 문서
+    'zip', 'rar', '7z',                                 // 압축 (내부 파일은 판별 불가 안내)
+]);
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('신고')
@@ -57,6 +65,14 @@ module.exports = {
             .setTimestamp();
 
         if (attachment) {
+            const ext = attachment.name.split('.').pop().toLowerCase();
+            if (!ALLOWED_EXTENSIONS.has(ext)) {
+                return interaction.editReply(
+                    `❌ 허용되지 않는 파일 형식입니다 (**.${ext}**)\n` +
+                    `허용 형식: 이미지, 영상, 오디오, PDF, TXT, ZIP`
+                );
+            }
+
             if (attachment.contentType?.startsWith('image/')) {
                 embed.setImage(attachment.url);
             } else {
