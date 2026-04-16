@@ -9,6 +9,9 @@ module.exports = {
         .setDescription('관리자에게 신고를 접수합니다')
         .addStringOption(option =>
             option.setName('내용').setDescription('신고 내용을 입력해주세요').setRequired(true)
+        )
+        .addAttachmentOption(option =>
+            option.setName('첨부파일').setDescription('사진 또는 파일을 첨부해주세요').setRequired(false)
         ),
 
     async execute(interaction) {
@@ -32,6 +35,7 @@ module.exports = {
         }
 
         const content = interaction.options.getString('내용');
+        const attachment = interaction.options.getAttachment('첨부파일');
         const ownerId = interaction.guild.ownerId;
 
         let owner;
@@ -51,6 +55,14 @@ module.exports = {
             .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
             .setColor(0xED4245)
             .setTimestamp();
+
+        if (attachment) {
+            if (attachment.contentType?.startsWith('image/')) {
+                embed.setImage(attachment.url);
+            } else {
+                embed.addFields({ name: '첨부파일', value: `[${attachment.name}](${attachment.url})` });
+            }
+        }
 
         try {
             await owner.send({ embeds: [embed] });
