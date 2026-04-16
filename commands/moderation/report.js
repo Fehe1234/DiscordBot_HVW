@@ -18,7 +18,9 @@ module.exports = {
         const now = Date.now();
         const lastUsed = cooldowns.get(userId);
 
-        if (lastUsed) {
+        const isOwner = userId === interaction.guild.ownerId;
+
+        if (!isOwner && lastUsed) {
             const remaining = COOLDOWN_MS - (now - lastUsed);
             if (remaining > 0) {
                 const hours = Math.floor(remaining / 3600000);
