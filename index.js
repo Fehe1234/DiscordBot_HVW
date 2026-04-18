@@ -38,6 +38,8 @@ for (const folder of commandFolders) {
 client.once(Events.ClientReady, async (c) => {
     console.log(`봇 준비 완료: ${c.user.tag}`);
     console.log(`커맨드 ${client.commands.size}개 로드됨`);
+    console.log(`참여 서버 목록 (${c.guilds.cache.size}개):`);
+    c.guilds.cache.forEach(guild => console.log(`  - ${guild.name} (${guild.id}) | 멤버 ${guild.memberCount}명`));
 
     const statuses = [
         { name: 'HVW 24시간 가동 중', type: ActivityType.Watching },
