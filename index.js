@@ -51,7 +51,7 @@ client.once(Events.ClientReady, async (c) => {
     };
 
     updateStatus();
-    setInterval(updateStatus, 30_000);
+    setInterval(updateStatus, 5_000);
 
     const channel = await c.channels.fetch(ONLINE_CHANNEL_ID).catch(() => null);
     if (channel) {
