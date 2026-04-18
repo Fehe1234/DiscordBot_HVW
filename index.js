@@ -39,10 +39,19 @@ client.once(Events.ClientReady, async (c) => {
     console.log(`봇 준비 완료: ${c.user.tag}`);
     console.log(`커맨드 ${client.commands.size}개 로드됨`);
 
-    c.user.setPresence({
-        activities: [{ name: 'HVW 24시간 가동중', type: ActivityType.Playing }],
-        status: 'online',
-    });
+    const statuses = [
+        { name: 'Hello! VRChat World! 를 24시간 지키는 중', type: ActivityType.Watching },
+        { name: '페헤님 곁을 지키는 고양이 🐱', type: ActivityType.Playing },
+    ];
+    let statusIndex = 0;
+
+    const updateStatus = () => {
+        c.user.setPresence({ activities: [statuses[statusIndex]], status: 'online' });
+        statusIndex = (statusIndex + 1) % statuses.length;
+    };
+
+    updateStatus();
+    setInterval(updateStatus, 30_000);
 
     const channel = await c.channels.fetch(ONLINE_CHANNEL_ID).catch(() => null);
     if (channel) {
