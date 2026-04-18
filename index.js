@@ -40,7 +40,7 @@ client.once(Events.ClientReady, async (c) => {
     console.log(`커맨드 ${client.commands.size}개 로드됨`);
 
     const statuses = [
-        { name: 'Hello! VRChat World! 를 24시간 지키는 중', type: ActivityType.Watching },
+        { name: 'HVW 24시간 가동 중', type: ActivityType.Watching },
         { name: '페헤님 곁을 지키는 고양이 🐱', type: ActivityType.Playing },
     ];
     let statusIndex = 0;
