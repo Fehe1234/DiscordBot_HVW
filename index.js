@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, Events, Collection, MessageFlags, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, Events, Collection, MessageFlags, EmbedBuilder, ActivityType } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -38,6 +38,11 @@ for (const folder of commandFolders) {
 client.once(Events.ClientReady, async (c) => {
     console.log(`봇 준비 완료: ${c.user.tag}`);
     console.log(`커맨드 ${client.commands.size}개 로드됨`);
+
+    c.user.setPresence({
+        activities: [{ name: 'HVW 24시간 가동중', type: ActivityType.Playing }],
+        status: 'online',
+    });
 
     const channel = await c.channels.fetch(ONLINE_CHANNEL_ID).catch(() => null);
     if (channel) {
