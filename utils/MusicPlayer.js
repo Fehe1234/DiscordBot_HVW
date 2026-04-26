@@ -6,7 +6,9 @@ const {
     StreamType,
     joinVoiceChannel,
 } = require('@discordjs/voice');
-const { exec: ytdlExec } = require('youtube-dl-exec');
+const { spawn } = require('child_process');
+const { constants: ytdlConstants } = require('youtube-dl-exec');
+const YTDLP = ytdlConstants.YOUTUBE_DL_PATH;
 const { EmbedBuilder } = require('discord.js');
 
 // 0 = 반복 없음, 1 = 현재 곡 반복, 2 = 전체 반복
@@ -85,13 +87,18 @@ async function playSong(guildId, song) {
     queue.current = song;
 
     try {
-        const process = ytdlExec(song.url, {
-            output: '-',
-            quiet: true,
-            format: 'bestaudio[ext=webm]/bestaudio/best',
-        });
+        const ytdlProcess = spawn(YTDLP, [
+            song.url,
+            '--output', '-',
+            '--quiet',
+            '--format', 'bestaudio[ext=webm]/bestaudio/best',
+            '--js-runtimes', 'nodejs',
+            '--no-playlist',
+        ]);
 
-        const resource = createAudioResource(process.stdout, {
+        ytdlProcess.stderr.on('data', (d) => console.error('[yt-dlp]', d.toString().trim()));
+
+        const resource = createAudioResource(ytdlProcess.stdout, {
             inputType: StreamType.Arbitrary,
         });
         queue.player.play(resource);
