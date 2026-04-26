@@ -6,7 +6,7 @@ const {
     StreamType,
     joinVoiceChannel,
 } = require('@discordjs/voice');
-const { raw: ytdlRaw } = require('youtube-dl-exec');
+const { exec: ytdlExec } = require('youtube-dl-exec');
 const play = require('play-dl');
 const { EmbedBuilder } = require('discord.js');
 
@@ -67,7 +67,7 @@ async function processNext(guildId) {
     queue.current = song;
 
     try {
-        const process = ytdlRaw(song.url, {
+        const process = ytdlExec(song.url, {
             output: '-',
             quiet: true,
             format: 'bestaudio[ext=webm]/bestaudio/best',
