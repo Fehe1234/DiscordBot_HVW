@@ -3,13 +3,12 @@ const {
     createAudioResource,
     AudioPlayerStatus,
     NoSubscriberBehavior,
+    StreamType,
     joinVoiceChannel,
 } = require('@discordjs/voice');
+const { raw: ytdlRaw } = require('youtube-dl-exec');
 const play = require('play-dl');
 const { EmbedBuilder } = require('discord.js');
-
-// ffmpeg-static 경로 명시
-process.env.FFMPEG_PATH = require('ffmpeg-static');
 
 const queues = new Map();
 
@@ -68,11 +67,17 @@ async function processNext(guildId) {
     queue.current = song;
 
     try {
-        const stream = await play.stream(song.url, { quality: 2 });
-        const resource = createAudioResource(stream.stream, {
-            inputType: stream.type,
-            inlineVolume: false,
+        const process = ytdlRaw(song.url, {
+            output: '-',
+            quiet: true,
+            format: 'bestaudio[ext=webm]/bestaudio/best',
+            limitRate: '100K',
         });
+
+        const resource = createAudioResource(process.stdout, {
+            inputType: StreamType.Arbitrary,
+        });
+
         queue.player.play(resource);
 
         const embed = new EmbedBuilder()
