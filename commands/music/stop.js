@@ -3,7 +3,7 @@ const { getQueue, destroyQueue } = require('../../utils/MusicPlayer');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('정지')
+        .setName('노래정지')
         .setDescription('재생을 멈추고 대기열을 초기화한 뒤 음성 채널에서 나갑니다'),
 
     async execute(interaction) {

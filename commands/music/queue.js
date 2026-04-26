@@ -3,7 +3,7 @@ const { getQueue } = require('../../utils/MusicPlayer');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('큐')
+        .setName('노래대기열')
         .setDescription('현재 대기열을 확인합니다'),
 
     async execute(interaction) {

@@ -3,7 +3,7 @@ const { getQueue } = require('../../utils/MusicPlayer');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('재개')
+        .setName('노래재개')
         .setDescription('일시정지된 재생을 다시 시작합니다'),
 
     async execute(interaction) {

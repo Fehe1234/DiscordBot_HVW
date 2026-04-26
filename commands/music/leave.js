@@ -3,7 +3,7 @@ const { getQueue, destroyQueue } = require('../../utils/MusicPlayer');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('나가')
+        .setName('통화방퇴장')
         .setDescription('봇을 음성 채널에서 내보냅니다'),
 
     async execute(interaction) {

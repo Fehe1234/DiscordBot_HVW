@@ -4,7 +4,7 @@ const { getQueue, createQueue, addAndPlay, joinChannel } = require('../../utils/
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('재생')
+        .setName('노래재생')
         .setDescription('YouTube 음악을 재생하거나 대기열에 추가합니다')
         .addStringOption(option =>
             option.setName('검색어').setDescription('YouTube URL 또는 검색어').setRequired(true)
