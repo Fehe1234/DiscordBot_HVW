@@ -7,8 +7,12 @@ const {
     joinVoiceChannel,
 } = require('@discordjs/voice');
 const { exec: ytdlExec } = require('youtube-dl-exec');
-const play = require('play-dl');
 const { EmbedBuilder } = require('discord.js');
+
+// 0 = 반복 없음, 1 = 현재 곡 반복, 2 = 전체 반복
+const LOOP_OFF    = 0;
+const LOOP_SINGLE = 1;
+const LOOP_ALL    = 2;
 
 const queues = new Map();
 
@@ -23,6 +27,7 @@ function createQueue(guildId, voiceChannel, textChannel, connection) {
     const queue = {
         songs: [],
         current: null,
+        loopMode: LOOP_OFF,
         player,
         connection,
         textChannel,
@@ -53,17 +58,30 @@ async function processNext(guildId) {
     const queue = queues.get(guildId);
     if (!queue) return;
 
+    // 현재 곡 반복
+    if (queue.loopMode === LOOP_SINGLE && queue.current) {
+        return playSong(guildId, queue.current);
+    }
+
+    // 전체 반복: 끝난 곡을 대기열 맨 뒤로
+    if (queue.loopMode === LOOP_ALL && queue.current) {
+        queue.songs.push(queue.current);
+    }
+
     if (queue.songs.length === 0) {
         queue.current = null;
-        const embed = new EmbedBuilder()
-            .setDescription('📭 대기열이 비었습니다. 음성 채널에서 나갑니다.')
-            .setColor(0x808080);
-        queue.textChannel.send({ embeds: [embed] }).catch(() => {});
-        setTimeout(() => destroyQueue(guildId), 1000);
-        return;
+        queue.textChannel.send('📭 대기열이 비었습니다.').catch(() => {});
+        return; // 채널에 그대로 대기
     }
 
     const song = queue.songs.shift();
+    await playSong(guildId, song);
+}
+
+async function playSong(guildId, song) {
+    const queue = queues.get(guildId);
+    if (!queue) return;
+
     queue.current = song;
 
     try {
@@ -71,17 +89,16 @@ async function processNext(guildId) {
             output: '-',
             quiet: true,
             format: 'bestaudio[ext=webm]/bestaudio/best',
-            limitRate: '100K',
         });
 
         const resource = createAudioResource(process.stdout, {
             inputType: StreamType.Arbitrary,
         });
-
         queue.player.play(resource);
 
+        const loopLabel = queue.loopMode === LOOP_SINGLE ? ' 🔂' : queue.loopMode === LOOP_ALL ? ' 🔁' : '';
         const embed = new EmbedBuilder()
-            .setTitle('🎵 재생 중')
+            .setTitle(`🎵 재생 중${loopLabel}`)
             .setDescription(`**[${song.title}](${song.url})**`)
             .setThumbnail(song.thumbnail ?? null)
             .addFields(
@@ -95,6 +112,7 @@ async function processNext(guildId) {
     } catch (err) {
         console.error('스트림 오류:', err.message);
         queue.textChannel.send(`⚠️ **${song.title}** 재생 실패: ${err.message}\n다음 곡으로 넘어갑니다.`).catch(() => {});
+        queue.current = null;
         processNext(guildId);
     }
 }
@@ -116,4 +134,7 @@ function joinChannel(interaction) {
     return connection;
 }
 
-module.exports = { getQueue, createQueue, destroyQueue, processNext, addAndPlay, joinChannel };
+module.exports = {
+    getQueue, createQueue, destroyQueue, processNext, addAndPlay, joinChannel,
+    LOOP_OFF, LOOP_SINGLE, LOOP_ALL,
+};
