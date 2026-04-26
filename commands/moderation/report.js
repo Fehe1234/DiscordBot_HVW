@@ -3,6 +3,11 @@ const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js'
 const cooldowns = new Map();
 const COOLDOWN_MS = 5 * 60 * 60 * 1000; // 5시간
 
+const ADMIN_ROLE_IDS = [
+    '1464055831816437823', // 부관리자
+    '1251157860340072548', // 가이드
+];
+
 const ALLOWED_EXTENSIONS = new Set([
     'png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp',       // 이미지
     'mp4', 'mov', 'avi', 'webm',                        // 영상
@@ -80,12 +85,31 @@ module.exports = {
             }
         }
 
-        try {
-            await owner.send({ embeds: [embed] });
-            cooldowns.set(userId, now);
-            await interaction.editReply('신고가 접수됐습니다. 관리자가 확인 후 조치할 예정입니다.');
-        } catch {
+        // 신고 받을 대상 수집 (서버 오너 + 부관리자/가이드 역할 보유자, 중복 제거)
+        const recipients = new Map();
+        recipients.set(ownerId, owner);
+
+        await interaction.guild.members.fetch();
+        for (const roleId of ADMIN_ROLE_IDS) {
+            const role = interaction.guild.roles.cache.get(roleId);
+            if (!role) continue;
+            for (const [, member] of role.members) {
+                if (!recipients.has(member.id)) {
+                    recipients.set(member.id, member.user);
+                }
+            }
+        }
+
+        let sent = 0;
+        for (const [, user] of recipients) {
+            await user.send({ embeds: [embed] }).then(() => sent++).catch(() => {});
+        }
+
+        if (sent === 0) {
             return interaction.editReply('신고 전송에 실패했습니다. 관리자의 DM이 열려있는지 확인해주세요.');
         }
+
+        cooldowns.set(userId, now);
+        await interaction.editReply('신고가 접수됐습니다. 관리자가 확인 후 조치할 예정입니다.');
     },
 };
