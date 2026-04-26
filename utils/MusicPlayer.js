@@ -30,6 +30,7 @@ function createQueue(guildId, voiceChannel, textChannel, connection) {
         songs: [],
         current: null,
         loopMode: LOOP_OFF,
+        stopping: false,
         player,
         connection,
         textChannel,
@@ -72,8 +73,11 @@ async function processNext(guildId) {
 
     if (queue.songs.length === 0) {
         queue.current = null;
-        queue.textChannel.send('📭 대기열이 비었습니다.').catch(() => {});
-        return; // 채널에 그대로 대기
+        if (!queue.stopping) {
+            queue.textChannel.send('📭 대기열이 비었습니다.').catch(() => {});
+        }
+        queue.stopping = false;
+        return;
     }
 
     const song = queue.songs.shift();
