@@ -2,10 +2,14 @@ const {
     createAudioPlayer,
     createAudioResource,
     AudioPlayerStatus,
+    NoSubscriberBehavior,
     joinVoiceChannel,
 } = require('@discordjs/voice');
 const play = require('play-dl');
 const { EmbedBuilder } = require('discord.js');
+
+// ffmpeg-static 경로 명시
+process.env.FFMPEG_PATH = require('ffmpeg-static');
 
 const queues = new Map();
 
@@ -14,7 +18,9 @@ function getQueue(guildId) {
 }
 
 function createQueue(guildId, voiceChannel, textChannel, connection) {
-    const player = createAudioPlayer();
+    const player = createAudioPlayer({
+        behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
+    });
     const queue = {
         songs: [],
         current: null,
@@ -27,7 +33,8 @@ function createQueue(guildId, voiceChannel, textChannel, connection) {
 
     player.on(AudioPlayerStatus.Idle, () => processNext(guildId));
     player.on('error', (err) => {
-        console.error('플레이어 오류:', err);
+        console.error('플레이어 오류:', err.message);
+        queue.textChannel.send(`⚠️ 재생 오류: ${err.message}`).catch(() => {});
         processNext(guildId);
     });
     connection.subscribe(player);
@@ -61,8 +68,11 @@ async function processNext(guildId) {
     queue.current = song;
 
     try {
-        const stream = await play.stream(song.url);
-        const resource = createAudioResource(stream.stream, { inputType: stream.type });
+        const stream = await play.stream(song.url, { quality: 2 });
+        const resource = createAudioResource(stream.stream, {
+            inputType: stream.type,
+            inlineVolume: false,
+        });
         queue.player.play(resource);
 
         const embed = new EmbedBuilder()
@@ -78,8 +88,8 @@ async function processNext(guildId) {
             .setTimestamp();
         queue.textChannel.send({ embeds: [embed] }).catch(() => {});
     } catch (err) {
-        console.error('스트림 오류:', err);
-        queue.textChannel.send(`⚠️ **${song.title}** 을(를) 재생할 수 없습니다. 다음 곡으로 넘어갑니다.`).catch(() => {});
+        console.error('스트림 오류:', err.message);
+        queue.textChannel.send(`⚠️ **${song.title}** 재생 실패: ${err.message}\n다음 곡으로 넘어갑니다.`).catch(() => {});
         processNext(guildId);
     }
 }
