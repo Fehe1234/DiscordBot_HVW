@@ -14,8 +14,7 @@ const buildEmbed = (worlds, page) => {
 
     const lines = slice.map((w, i) => {
         const idx = page * PAGE_SIZE + i + 1;
-        const tags = [w.genre, w.language, w.groupSize, w.capacity].filter(Boolean).join(' · ');
-        return `**${idx}.** [${w.name}](${w.link})\n└ ${tags}${w.description ? `\n└ ${w.description}` : ''}`;
+        return `**${idx}.** ${w.name}`;
     });
 
     return new EmbedBuilder()
