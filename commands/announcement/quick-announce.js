@@ -1,24 +1,20 @@
-const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { hasPermission } = require('../../utils/permissions');
 const fs = require('fs');
 const path = require('path');
 
 const settingsPath = path.join(__dirname, '../../data/settings.json');
-
 const loadSettings = () => JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('공지채널')
-        .setDescription('공지 채널에 공지를 전송합니다 (관리자 전용)')
-        .addStringOption(option =>
-            option.setName('제목').setDescription('공지 제목').setRequired(true)
+        .setName('공지')
+        .setDescription('지정된 공지 채널에 공지를 전송합니다 (관리자 전용)')
+        .addStringOption(o =>
+            o.setName('내용').setDescription('공지 내용').setRequired(true)
         )
-        .addStringOption(option =>
-            option.setName('내용').setDescription('공지 내용').setRequired(true)
-        )
-        .addStringOption(option =>
-            option.setName('멘션').setDescription('멘션 여부를 선택합니다').setRequired(false)
+        .addStringOption(o =>
+            o.setName('멘션').setDescription('멘션 여부').setRequired(false)
                 .addChoices(
                     { name: '없음', value: 'none' },
                     { name: '@everyone', value: '@everyone' },
@@ -45,21 +41,11 @@ module.exports = {
             return interaction.editReply('설정된 공지 채널을 찾을 수 없습니다. `/공지설정` 으로 다시 설정해주세요.');
         }
 
-        const title = interaction.options.getString('제목');
         const content = interaction.options.getString('내용');
         const mention = interaction.options.getString('멘션') ?? 'none';
 
-        const embed = new EmbedBuilder()
-            .setTitle(title)
-            .setDescription(content)
-            .setColor(0x5865F2)
-            .setFooter({ text: `공지 | ${interaction.user.tag}` })
-            .setTimestamp();
-
-        const messagePayload = { embeds: [embed] };
-        if (mention !== 'none') messagePayload.content = mention;
-
-        await channel.send(messagePayload);
+        const payload = { content: mention !== 'none' ? `${mention}\n${content}` : content };
+        await channel.send(payload);
         await interaction.editReply(`${channel} 에 공지를 전송했습니다.`);
     },
 };
