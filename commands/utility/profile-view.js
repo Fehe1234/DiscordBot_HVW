@@ -31,12 +31,16 @@ module.exports = {
             .setThumbnail(target.user.displayAvatarURL({ size: 256 }))
             .setColor(target.displayHexColor === '#000000' ? 0x5865F2 : target.displayColor);
 
-        if (title)             embed.setDescription(title);
-        if (profile.description)   embed.addFields({ name: '📝 소개', value: profile.description });
-        if (profile.comment)       embed.addFields({ name: '💬 한 마디', value: profile.comment });
-        if (profile.favoriteWorld) embed.addFields({ name: '🌐 자주 가는 월드', value: profile.favoriteWorld });
+        if (title) embed.setDescription(title);
 
-        embed.addFields({ name: '🏷️ 디스코드', value: target.user.tag, inline: true });
+        embed.addFields(
+            { name: '🎮 VRChat 닉네임', value: profile.vrchatNick, inline: true },
+            { name: '🏷️ 디스코드', value: target.user.tag, inline: true },
+        );
+
+        if (profile.description)   embed.addFields({ name: '📝 소개', value: profile.description });
+        if (profile.favoriteWorld) embed.addFields({ name: '🌐 자주 가는 월드', value: profile.favoriteWorld });
+        if (profile.comment)       embed.addFields({ name: '💬 한 마디', value: profile.comment });
 
         const date = new Date(profile.updatedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
         embed.setFooter({ text: `마지막 업데이트: ${date}` }).setTimestamp();
