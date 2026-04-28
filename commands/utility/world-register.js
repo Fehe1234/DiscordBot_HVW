@@ -72,8 +72,14 @@ module.exports = {
 
         const worlds = loadWorlds();
 
-        if (worlds.some(w => w.name === name)) {
-            return interaction.editReply('이미 동일한 이름의 월드가 등록되어 있습니다.');
+        const dupName = worlds.find(w => w.name === name);
+        if (dupName) {
+            return interaction.editReply(`이미 **${name}** 이름의 월드가 등록되어 있습니다.`);
+        }
+
+        const dupLink = worlds.find(w => w.link === link);
+        if (dupLink) {
+            return interaction.editReply(`이미 동일한 링크의 월드가 **${dupLink.name}** 으로 등록되어 있습니다.`);
         }
 
         const world = {
