@@ -10,13 +10,13 @@ module.exports = {
         .setName('프로필')
         .setDescription('VRChat 프로필을 조회합니다')
         .addUserOption(o =>
-            o.setName('유저').setDescription('조회할 유저 (미입력 시 본인)').setRequired(false)
+            o.setName('유저').setDescription('조회할 유저').setRequired(true)
         ),
 
     async execute(interaction) {
         await interaction.deferReply();
 
-        const target = interaction.options.getMember('유저') ?? interaction.member;
+        const target = interaction.options.getMember('유저');
         const profiles = loadProfiles();
         const profile = profiles[target.id];
 
