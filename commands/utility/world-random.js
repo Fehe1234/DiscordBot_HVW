@@ -2,6 +2,9 @@ const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js'
 const fs = require('fs');
 const path = require('path');
 
+const profilesPath = path.join(__dirname, '../../data/profiles.json');
+const loadProfiles = () => { try { return JSON.parse(fs.readFileSync(profilesPath, 'utf-8')); } catch { return {}; } };
+
 const NITRO_ROLE_ID = '1267802236843593862';
 const FREE_ROLE_IDS = ['1464055831816437823', '1251157860340072548'];
 const hasAccess = (member) =>
@@ -56,8 +59,15 @@ module.exports = {
         embed.addFields({ name: '🎮 장르', value: world.genre, inline: true });
         if (world.language)  embed.addFields({ name: '🗣️ 언어', value: world.language, inline: true });
         if (world.groupSize) embed.addFields({ name: '👥 추천인원', value: world.groupSize, inline: true });
-        if (avg)             embed.addFields({ name: '⭐ 평점', value: `${avg}점 (${list.length}개)`, inline: true });
-        embed.addFields({ name: '🔗 링크', value: world.link });
+        if (avg) embed.addFields({ name: '⭐ 평점', value: `${avg}점 (${list.length}개)`, inline: true });
+
+        const profiles = loadProfiles();
+        const regTitle = profiles[world.registeredBy]?.title;
+        const regValue = regTitle ? `<@${world.registeredBy}> ✨${regTitle}` : `<@${world.registeredBy}>`;
+        embed.addFields(
+            { name: '🔗 링크', value: world.link },
+            { name: '📝 등록자', value: regValue, inline: true },
+        );
         embed.setFooter({ text: `전체 ${loadWorlds().length}개 중 랜덤 선택` }).setTimestamp();
 
         await interaction.editReply({ embeds: [embed] });

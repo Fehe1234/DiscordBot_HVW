@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const { checkAndNotify } = require('../../utils/badges');
 
 const NITRO_ROLE_ID = '1267802236843593862';
 const FREE_ROLE_IDS = ['1464055831816437823', '1251157860340072548'];
@@ -54,6 +55,7 @@ module.exports = {
             favorites[userId].push(world.id);
             saveFavorites(favorites);
             await interaction.editReply(`⭐ **${world.name}** 을(를) 즐겨찾기에 추가했습니다.`);
+            checkAndNotify(userId, interaction.client);
 
         } else if (sub === '삭제') {
             const query = interaction.options.getString('월드').toLowerCase();

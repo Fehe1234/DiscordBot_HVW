@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const { checkAndNotify } = require('../../utils/badges');
 
 const NITRO_ROLE_ID = '1267802236843593862';
 const FREE_ROLE_IDS = ['1464055831816437823', '1251157860340072548']; // 부관리자, 가이드
@@ -49,5 +50,6 @@ module.exports = {
 
         saveProfiles(profiles);
         await interaction.editReply('✅ 프로필이 등록됐습니다!');
+        checkAndNotify(interaction.user.id, interaction.client);
     },
 };

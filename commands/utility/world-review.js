@@ -1,6 +1,10 @@
 const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const { checkAndNotify } = require('../../utils/badges');
+
+const profilesPath = path.join(__dirname, '../../data/profiles.json');
+const loadProfiles = () => { try { return JSON.parse(fs.readFileSync(profilesPath, 'utf-8')); } catch { return {}; } };
 
 const NITRO_ROLE_ID = '1267802236843593862';
 const FREE_ROLE_IDS = ['1464055831816437823', '1251157860340072548'];
@@ -68,15 +72,19 @@ module.exports = {
             saveReviews(reviews);
             const stars = '⭐'.repeat(rating);
             await interaction.editReply(`${stars} **${world.name}** 에 리뷰를 남겼습니다.`);
+            checkAndNotify(interaction.user.id, interaction.client);
 
         } else if (sub === '조회') {
             const list = reviews[world.id];
             if (!list?.length) return interaction.editReply('아직 리뷰가 없습니다.');
 
             const avg = (list.reduce((s, r) => s + r.rating, 0) / list.length).toFixed(1);
-            const lines = list.map(r =>
-                `${'⭐'.repeat(r.rating)} <@${r.userId}>${r.review ? ` — ${r.review}` : ''}`
-            ).join('\n');
+            const profiles = loadProfiles();
+            const lines = list.map(r => {
+                const title = profiles[r.userId]?.title;
+                const badge = title ? ` ✨${title}` : '';
+                return `${'⭐'.repeat(r.rating)} <@${r.userId}>${badge}${r.review ? ` — ${r.review}` : ''}`;
+            }).join('\n');
 
             const embed = new EmbedBuilder()
                 .setTitle(`⭐ ${world.name} 리뷰`)

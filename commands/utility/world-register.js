@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const { checkAndNotify } = require('../../utils/badges');
 
 const worldsPath = path.join(__dirname, '../../data/worlds.json');
 const COOLDOWN_DEFAULT = 6 * 60 * 60 * 1000; // 일반: 6시간
@@ -110,5 +111,6 @@ module.exports = {
         cooldowns.set(userId, now);
 
         await interaction.editReply(`✅ **${name}** 월드가 등록됐습니다!`);
+        checkAndNotify(userId, interaction.client);
     },
 };
