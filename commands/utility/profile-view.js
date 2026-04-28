@@ -24,12 +24,15 @@ module.exports = {
             return interaction.editReply(`**${target.user.tag}** 님의 프로필이 등록되어 있지 않습니다.`);
         }
 
+        const title = profile.title ? `✨ ${profile.title}` : null;
+
         const embed = new EmbedBuilder()
             .setTitle(`🎮 ${profile.vrchatNick}`)
             .setThumbnail(target.user.displayAvatarURL({ size: 256 }))
             .setColor(target.displayHexColor === '#000000' ? 0x5865F2 : target.displayColor);
 
-        if (profile.description)   embed.setDescription(profile.description);
+        if (title)             embed.setDescription(title);
+        if (profile.description)   embed.addFields({ name: '📝 소개', value: profile.description });
         if (profile.comment)       embed.addFields({ name: '💬 한 마디', value: profile.comment });
         if (profile.favoriteWorld) embed.addFields({ name: '🌐 자주 가는 월드', value: profile.favoriteWorld });
 

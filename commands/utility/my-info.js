@@ -52,11 +52,10 @@ module.exports = {
             .setTimestamp();
 
         if (profile) {
-            embed.addFields(
-                { name: '​', value: '─── 🎮 VRChat 프로필 ───' },
-                { name: 'VRChat 닉네임', value: profile.vrchatNick, inline: true },
-            );
-            if (profile.description)   embed.addFields({ name: '소개', value: profile.description });
+            embed.addFields({ name: '​', value: '─── 🎮 VRChat 프로필 ───' });
+            if (profile.title)         embed.addFields({ name: '✨ 칭호', value: profile.title, inline: true });
+            embed.addFields({ name: 'VRChat 닉네임', value: profile.vrchatNick, inline: true });
+            if (profile.description)   embed.addFields({ name: '📝 소개', value: profile.description });
             if (profile.favoriteWorld) embed.addFields({ name: '🌐 자주 가는 월드', value: profile.favoriteWorld, inline: true });
             if (profile.comment)       embed.addFields({ name: '💬 한 마디', value: profile.comment, inline: true });
         } else {
