@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const NITRO_ROLE_ID = '1267802236843593862';
+const FREE_ROLE_IDS = ['1464055831816437823', '1251157860340072548']; // 부관리자, 가이드
 const profilesPath = path.join(__dirname, '../../data/profiles.json');
 
 const loadProfiles = () => JSON.parse(fs.readFileSync(profilesPath, 'utf-8'));
@@ -28,7 +29,10 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-        if (!interaction.member.roles.cache.has(NITRO_ROLE_ID)) {
+        const hasAccess = interaction.member.roles.cache.has(NITRO_ROLE_ID)
+            || FREE_ROLE_IDS.some(id => interaction.member.roles.cache.has(id));
+
+        if (!hasAccess) {
             return interaction.editReply('이 명령어는 니트로 유저만 사용할 수 있습니다.');
         }
 
