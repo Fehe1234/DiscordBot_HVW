@@ -3,8 +3,14 @@ const fs = require('fs');
 const path = require('path');
 
 const worldsPath = path.join(__dirname, '../../data/worlds.json');
-const COOLDOWN_MS = 6 * 60 * 60 * 1000;
+const COOLDOWN_DEFAULT = 6 * 60 * 60 * 1000; // 일반: 6시간
+const COOLDOWN_NITRO   = 1 * 60 * 60 * 1000; // 니트로: 1시간
 const cooldowns = new Map();
+
+const NITRO_ROLE_ID = '1267802236843593862';
+const FREE_ROLE_IDS = ['1464055831816437823', '1251157860340072548'];
+const hasNitroAccess = (member) =>
+    member.roles.cache.has(NITRO_ROLE_ID) || FREE_ROLE_IDS.some(id => member.roles.cache.has(id));
 
 const loadWorlds = () => JSON.parse(fs.readFileSync(worldsPath, 'utf-8'));
 const saveWorlds = (data) => fs.writeFileSync(worldsPath, JSON.stringify(data, null, 2), 'utf-8');
@@ -52,13 +58,16 @@ module.exports = {
         const userId = interaction.user.id;
         const now = Date.now();
         const lastUsed = cooldowns.get(userId);
+        const isNitro = hasNitroAccess(interaction.member);
+        const cooldown = isNitro ? COOLDOWN_NITRO : COOLDOWN_DEFAULT;
 
         if (lastUsed) {
-            const remaining = COOLDOWN_MS - (now - lastUsed);
+            const remaining = cooldown - (now - lastUsed);
             if (remaining > 0) {
                 const h = Math.floor(remaining / 3600000);
                 const m = Math.floor((remaining % 3600000) / 60000);
-                return interaction.editReply(`월드 등록은 6시간에 한 번만 가능합니다. **${h}시간 ${m}분** 후 다시 시도해주세요.`);
+                const limit = isNitro ? '1시간' : '6시간';
+                return interaction.editReply(`월드 등록은 ${limit}에 한 번만 가능합니다. **${h}시간 ${m}분** 후 다시 시도해주세요.`);
             }
         }
 
