@@ -1,15 +1,13 @@
 const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
 const { hasPermission } = require('../../utils/permissions');
-const fs = require('fs');
-const path = require('path');
-
-const settingsPath = path.join(__dirname, '../../data/settings.json');
-const loadSettings = () => JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('공지')
-        .setDescription('지정된 공지 채널에 공지를 전송합니다 (관리자 전용)')
+        .setDescription('원하는 채널에 공지를 전송합니다 (관리자 전용)')
+        .addChannelOption(o =>
+            o.setName('채널').setDescription('공지를 보낼 채널').setRequired(true)
+        )
         .addStringOption(o =>
             o.setName('제목').setDescription('공지 제목').setRequired(true)
         )
@@ -35,18 +33,7 @@ module.exports = {
             return interaction.editReply('이 명령어를 사용할 권한이 없습니다.');
         }
 
-        const settings = loadSettings();
-        const channelId = settings[interaction.guildId]?.announceChannel;
-
-        if (!channelId) {
-            return interaction.editReply('공지 채널이 설정되지 않았습니다. `/공지설정` 으로 먼저 채널을 설정해주세요.');
-        }
-
-        const channel = interaction.guild.channels.cache.get(channelId);
-        if (!channel) {
-            return interaction.editReply('설정된 공지 채널을 찾을 수 없습니다. `/공지설정` 으로 다시 설정해주세요.');
-        }
-
+        const channel = interaction.options.getChannel('채널');
         const title   = interaction.options.getString('제목');
         const content = interaction.options.getString('내용');
         const image   = interaction.options.getAttachment('이미지');

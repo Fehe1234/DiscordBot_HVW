@@ -17,6 +17,9 @@ module.exports = {
         .addStringOption(option =>
             option.setName('내용').setDescription('공지 내용').setRequired(true)
         )
+        .addAttachmentOption(option =>
+            option.setName('이미지').setDescription('첨부 이미지 (선택)').setRequired(false)
+        )
         .addStringOption(option =>
             option.setName('멘션').setDescription('멘션 여부를 선택합니다').setRequired(false)
                 .addChoices(
@@ -45,8 +48,9 @@ module.exports = {
             return interaction.editReply('설정된 공지 채널을 찾을 수 없습니다. `/공지설정` 으로 다시 설정해주세요.');
         }
 
-        const title = interaction.options.getString('제목');
+        const title   = interaction.options.getString('제목');
         const content = interaction.options.getString('내용');
+        const image   = interaction.options.getAttachment('이미지');
         const mention = interaction.options.getString('멘션') ?? 'none';
 
         const embed = new EmbedBuilder()
@@ -55,6 +59,8 @@ module.exports = {
             .setColor(0x5865F2)
             .setFooter({ text: `공지 | ${interaction.user.tag}` })
             .setTimestamp();
+
+        if (image) embed.setImage(image.url);
 
         const messagePayload = { embeds: [embed] };
         if (mention !== 'none') messagePayload.content = mention;
