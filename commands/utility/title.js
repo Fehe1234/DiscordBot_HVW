@@ -72,9 +72,12 @@ module.exports = {
 
             // 닉네임 변경
             const newNick = `[${title}] ${profiles[userId].originalNickname}`;
-            await member.setNickname(newNick).catch(() => {});
+            const nickResult = await member.setNickname(newNick).catch(e => e);
+            const nickMsg = nickResult instanceof Error
+                ? `\n⚠️ 닉네임 변경 실패: ${nickResult.message}`
+                : `\n닉네임: \`${newNick}\``;
 
-            await interaction.editReply(`✨ 칭호가 **${title}** 로 설정됐습니다!`);
+            await interaction.editReply(`✨ 칭호가 **${title}** 로 설정됐습니다!${nickMsg}`);
 
         } else if (sub === '삭제') {
             if (!profiles[userId].title) return interaction.editReply('설정된 칭호가 없습니다.');
@@ -85,9 +88,12 @@ module.exports = {
             saveProfiles(profiles);
 
             // 닉네임 복원
-            await member.setNickname(original).catch(() => {});
+            const restoreResult = await member.setNickname(original).catch(e => e);
+            const restoreMsg = restoreResult instanceof Error
+                ? `\n⚠️ 닉네임 복원 실패: ${restoreResult.message}`
+                : `\n닉네임: \`${original}\``;
 
-            await interaction.editReply('🗑️ 칭호가 삭제됐습니다.');
+            await interaction.editReply(`🗑️ 칭호가 삭제됐습니다.${restoreMsg}`);
         }
     },
 };
