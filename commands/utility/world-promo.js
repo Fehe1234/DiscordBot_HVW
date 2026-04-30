@@ -34,6 +34,7 @@ module.exports = {
                 .setDescription('내 VRChat 월드를 7일간 홍보 채널에 등록합니다')
                 .addStringOption(o => o.setName('이름').setDescription('월드 이름').setRequired(true))
                 .addStringOption(o => o.setName('링크').setDescription('VRChat 월드 링크').setRequired(true))
+                .addAttachmentOption(o => o.setName('포스터').setDescription('홍보 포스터 이미지').setRequired(true))
                 .addStringOption(o => o.setName('홍보내용').setDescription('홍보 문구 (선택)').setRequired(false))
         )
         .addSubcommand(sub =>
@@ -65,18 +66,21 @@ module.exports = {
                 }
             }
 
-            const name = interaction.options.getString('이름');
-            const link = interaction.options.getString('링크');
-            const desc = interaction.options.getString('홍보내용') ?? null;
+            const name   = interaction.options.getString('이름');
+            const link   = interaction.options.getString('링크');
+            const poster = interaction.options.getAttachment('포스터');
+            const desc   = interaction.options.getString('홍보내용') ?? null;
 
             if (!link.startsWith('https://')) {
                 return interaction.editReply('올바른 VRChat 링크를 입력해주세요. (https://로 시작)');
             }
 
             const expiresAt = new Date(Date.now() + PROMO_DURATION_MS).toISOString();
-            const msg = await channel.send({ embeds: [buildEmbed(userId, name, link, desc, expiresAt)] });
+            const embed = buildEmbed(userId, name, link, desc, expiresAt);
+            embed.setImage(poster.url);
+            const msg = await channel.send({ embeds: [embed] });
 
-            promos[userId] = { worldName: name, link, description: desc, messageId: msg.id, expiresAt, createdAt: new Date().toISOString() };
+            promos[userId] = { worldName: name, link, description: desc, posterUrl: poster.url, messageId: msg.id, expiresAt, createdAt: new Date().toISOString() };
             savePromos(promos);
 
             const ts = Math.floor(new Date(expiresAt).getTime() / 1000);
@@ -89,6 +93,7 @@ module.exports = {
             const newDesc = interaction.options.getString('홍보내용') ?? promo.description;
             const expiresAt = new Date(Date.now() + PROMO_DURATION_MS).toISOString();
             const embed = buildEmbed(userId, promo.worldName, promo.link, newDesc, expiresAt);
+            if (promo.posterUrl) embed.setImage(promo.posterUrl);
 
             let msgId = promo.messageId;
             try {
