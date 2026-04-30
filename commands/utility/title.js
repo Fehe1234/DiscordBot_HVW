@@ -27,7 +27,7 @@ module.exports = {
                 )
         )
         .addSubcommand(sub =>
-            sub.setName('삭제').setDescription('설정된 칭호를 삭제하고 닉네임을 복원합니다')
+            sub.setName('삭제').setDescription('설정된 칭호를 삭제합니다')
         )
         .addSubcommand(sub =>
             sub.setName('목록').setDescription('해금된 뱃지 칭호 목록을 확인합니다')
@@ -74,7 +74,7 @@ module.exports = {
             const newNick = `[${title}] ${profiles[userId].originalNickname}`;
             await member.setNickname(newNick).catch(() => {});
 
-            await interaction.editReply(`✨ 칭호가 **${title}** 로 설정됐습니다!\n닉네임: \`${newNick}\``);
+            await interaction.editReply(`✨ 칭호가 **${title}** 로 설정됐습니다!`);
 
         } else if (sub === '삭제') {
             if (!profiles[userId].title) return interaction.editReply('설정된 칭호가 없습니다.');
@@ -87,7 +87,7 @@ module.exports = {
             // 닉네임 복원
             await member.setNickname(original).catch(() => {});
 
-            await interaction.editReply(`🗑️ 칭호가 삭제됐습니다. 닉네임이 \`${original}\` 로 복원됐습니다.`);
+            await interaction.editReply('🗑️ 칭호가 삭제됐습니다.');
         }
     },
 };
