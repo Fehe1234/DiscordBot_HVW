@@ -63,7 +63,6 @@ const CATEGORIES = {
         label: '💎 니트로 전용',
         commands: [
             { name: '/내정보', desc: '내 Discord + VRChat 프로필 통합 조회' },
-            { name: '/유저상태 [유저]', desc: '유저 온라인 상태 및 활동 확인' },
             { name: '/월드정보 [이름]', desc: '월드 상세 정보 조회' },
             { name: '/월드리뷰 작성/조회/삭제', desc: '월드 별점 및 리뷰 관리' },
             { name: '/즐겨찾기 추가/삭제/목록', desc: '월드 즐겨찾기 관리 (최대 10개)' },
